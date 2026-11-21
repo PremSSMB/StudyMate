@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f8f7fc">
+  <meta name="description" content="StudyMate is a student planner that turns uploaded study materials into notes, flashcards and practice quizzes — without AI or an account.">
+  <title>StudyMate — Your study space</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.8.0/mammoth.browser.min.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <a class="brand" href="#planner" data-view-link="planner">
+        <span class="brand-mark">✦</span><span>StudyMate</span>
+      </a>
+      <p class="sidebar-label">YOUR STUDY SPACE</p>
+      <nav class="nav-list" aria-label="Main navigation">
+        <button class="nav-item active" data-view="planner"><span class="nav-symbol">▦</span> Planner</button>
+        <button class="nav-item" data-view="upload"><span class="nav-symbol">↥</span> Upload & create <span class="nav-tag">TOOLS</span></button>
+        <button class="nav-item" data-view="flashcards"><span class="nav-symbol">▤</span> Flashcards</button>
+        <button class="nav-item" data-view="quizzes"><span class="nav-symbol">✎</span> Quizzes</button>
+        <button class="nav-item" data-view="notes"><span class="nav-symbol">▧</span> Study notes</button>
+        <button class="nav-item" data-view="coach"><span class="nav-symbol">✧</span> Study Coach</button>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="sidebar-note"><span>✦</span><strong>Little steps add up.</strong><p>Make a plan that works for you.</p></div>
+        <div class="privacy-line"><i></i> Your study data stays in this browser</div>
+      </div>
+    </aside>
+
+    <main class="main-area">
+      <header class="topbar">
+        <div class="topbar-copy">
+          <p class="eyebrow" id="top-date-label">YOUR STUDY SPACE</p>
+          <h1 id="page-title">Your month, your plan <span class="title-star">✦</span></h1>
+          <p class="page-subtitle" id="page-subtitle">Keep track of what's due and make time for you.</p>
+        </div>
+        <div class="topbar-right">
+          <span class="local-badge"><i></i> No AI · No account</span>
+          <div class="avatar">S</div>
+          <button class="mobile-menu" id="mobile-menu" aria-label="Open navigation">☰</button>
+        </div>
+      </header>
+
+      <!-- PLANNER -->
+      <section class="view-page active" id="view-planner">
+        <div class="stats-grid">
+          <article class="stat-card lilac"><span class="stat-icon">▣</span><div><p>Open assignments</p><strong id="stat-open">0</strong></div><small>on your calendar</small></article>
+          <article class="stat-card mint"><span class="stat-icon">✓</span><div><p>Turned in</p><strong id="stat-done">0</strong></div><small>look at you go</small></article>
+          <article class="stat-card peach"><span class="stat-icon">☷</span><div><p>To-do items</p><strong id="stat-todos">0</strong></div><small>one step at a time</small></article>
+        </div>
+
+        <div class="planner-grid">
+          <section class="surface calendar-card">
+            <div class="section-heading">
+              <div><p class="eyebrow">YOUR OVERVIEW</p><h2 id="month-title">Month Year</h2></div>
+              <div class="month-controls">
+                <button class="icon-button" id="prev-month" aria-label="Previous month">‹</button>
+                <button class="today-button" id="go-today">Today</button>
+                <button class="icon-button" id="next-month" aria-label="Next month">›</button>
+              </div>
+            </div>
+            <div class="weekday-row"><span>MON</span><span>TUE</span><span>WED</span><span>THU</span><span>FRI</span><span>SAT</span><span>SUN</span></div>
+            <div class="calendar-grid" id="calendar-grid" aria-label="Monthly calendar"></div>
+            <div class="calendar-legend"><span><i class="legend-purple"></i> Assignment</span><span><i class="legend-green"></i> Turned in</span><small>Select a day to see its work</small></div>
+          </section>
+
+          <section class="surface selected-day-card">
+            <div class="section-heading"><div><p class="eyebrow">YOUR PLAN</p><h2 id="selected-date-title">Today</h2></div><span class="flower-mark">✿</span></div>
+            <div class="assignment-list" id="assignment-list"></div>
+            <form class="inline-form" id="assignment-form">
+              <label for="assignment-title">Add an assignment</label>
+              <input id="assignment-title" maxlength="90" placeholder="e.g. Biology lab report" required>
+              <div class="input-button-row">
+                <select id="assignment-subject" aria-label="Assignment subject"><option>General</option><option>Math</option><option>English</option><option>Science</option><option>History</option><option>Art</option><option>Computer Science</option><option>Other</option></select>
+                <button class="primary-button" type="submit">+ Add</button>
+              </div>
+              <small>Adding to the date you selected.</small>
+            </form>
+          </section>
+        </div>
+
+        <section class="surface todo-card">
+          <div class="section-heading"><div><p class="eyebrow">ONE THING AT A TIME</p><h2>My to-do list <span class="heading-emoji">☁</span></h2></div><span class="count-pill" id="todo-count">0 left</span></div>
+          <form class="todo-entry" id="todo-form">
+            <input id="todo-title" maxlength="100" placeholder="What do you need to get done?" required>
+            <input id="todo-date" type="date" aria-label="Optional due date">
+            <button class="primary-button" type="submit">+ Add task</button>
+          </form>
+          <div class="todo-list" id="todo-list"></div>
+        </section>
+      </section>
+
+      <!-- UPLOAD & CREATE -->
+      <section class="view-page" id="view-upload" hidden>
+        <div class="section-intro"><div><p class="eyebrow">YOUR MATERIAL, YOUR STUDY KIT</p><h2>Turn class materials into practice</h2><p>StudyMate works directly in your browser. It finds key terms and important sentences to create starter notes, flashcards, and quizzes — no AI service or API key.</p></div><span class="intro-illustration">📚</span></div>
+        <section class="surface upload-surface">
+          <div class="drop-zone" id="drop-zone" tabindex="0" role="button" aria-label="Choose study files">
+            <div class="drop-icon">↥</div><h3>Drop your study materials here</h3><p>or <span>browse files</span> from your device</p><small>Supported: PDF, DOCX, TXT, MD, CSV, VTT, SRT captions · Up to 5 files · 15 MB each</small>
+          </div>
+          <input class="visually-hidden" id="file-input" type="file" multiple accept=".pdf,.docx,.txt,.md,.csv,.vtt,.srt">
+          <div id="file-queue" class="file-queue" hidden></div>
+          <div class="preference-grid">
+            <label>Subject (optional)<input id="material-subject" maxlength="60" placeholder="e.g. Biology"></label>
+            <label>Study level<select id="study-level"><option>High school</option><option>Middle school</option><option>College</option><option>General</option></select></label>
+            <label>Flashcards<select id="card-count"><option value="8">8 cards</option><option value="12" selected>12 cards</option><option value="20">20 cards</option></select></label>
+            <label>Quiz questions<select id="question-count"><option value="5">5 questions</option><option value="8" selected>8 questions</option><option value="12">12 questions</option></select></label>
+          </div>
+          <div class="privacy-callout"><strong>How this works:</strong> This version does not use AI. It extracts text in your browser, identifies repeated key terms and important sentences, and builds practice activities from those patterns. Results are a starting point—check them against your original material.</div>
+          <div id="upload-error" class="notice error" role="alert" hidden></div>
+          <div id="upload-status" class="notice success" role="status" hidden></div>
+          <button class="primary-button generate-button" id="generate-kit" disabled>✦ Create my study kit</button>
+        </section>
+        <section class="materials-section"><div class="section-heading"><div><p class="eyebrow">YOUR LIBRARY</p><h2>Uploaded study sources</h2></div><span class="count-pill" id="material-count">0 saved</span></div><div class="materials-grid" id="materials-list"></div></section>
+      </section>
+
+      <!-- FLASHCARDS -->
+      <section class="view-page" id="view-flashcards" hidden>
+        <div class="section-intro"><div><p class="eyebrow">RECALL PRACTICE</p><h2>Your flashcard library</h2><p>StudyMate creates cards from important terms and sentences in your uploaded materials.</p></div><span class="intro-illustration">🧠</span></div>
+        <div class="flashcard-layout" id="flashcard-content">
+          <section class="surface flashcard-study">
+            <div class="section-heading"><div><p class="eyebrow">STUDY MODE</p><h2>Flip & remember</h2></div><span class="count-pill" id="card-progress">0 cards</span></div>
+            <button class="study-flashcard" id="study-flashcard" type="button"><span class="card-side-label" id="card-side-label">QUESTION</span><strong id="card-text">Upload material to create your first cards.</strong><span class="flip-hint" id="flip-hint">Your cards will appear here.</span><span class="card-topic" id="card-topic">StudyMate</span></button>
+            <div class="flashcard-controls"><button class="secondary-button" id="card-prev">← Previous</button><button class="primary-button" id="card-next">Next →</button></div>
+            <div class="flashcard-rating" id="card-rating" hidden><span>How well did you know this?</span><div><button class="secondary-button" id="rate-review">↻ Need another look</button><button class="primary-button" id="rate-known">✓ Got it</button></div></div>
+          </section>
+          <section class="surface library-side"><p class="eyebrow">YOUR GENERATED CARDS</p><h3 id="deck-heading">0 cards to review</h3><div class="generated-list" id="generated-card-list"></div><button class="secondary-button full-width" data-goto="upload">+ Upload more materials</button></section>
+        </div>
+        <div id="flashcard-empty" class="surface empty-library" hidden><span>🗂️</span><h3>Your flashcards will appear here</h3><p>Upload class notes, PDF chapters, or a DOCX file. StudyMate will create cards from the extracted text.</p><button class="primary-button" data-goto="upload">Upload study materials</button></div>
+      </section>
+
+      <!-- QUIZZES -->
+      <section class="view-page" id="view-quizzes" hidden>
+        <div class="section-intro"><div><p class="eyebrow">PRACTICE & CHECK YOUR LEARNING</p><h2>Your quiz library</h2><p>Questions are generated from sentences and key terms found in your study materials.</p></div><span class="intro-illustration">🎯</span></div>
+        <div class="quiz-layout" id="quiz-content">
+          <section class="surface quiz-panel"><div class="section-heading"><div><p class="eyebrow">PRACTICE TEST</p><h2 id="quiz-heading">Ready when you are</h2></div><span class="count-pill" id="quiz-total">0 questions</span></div><div id="quiz-runner"><div class="quiz-start"><span>✏️</span><h3>Test what you remember</h3><p>Generate questions from your notes, then take a practice round. Your answers help the Study Coach identify topics to revisit.</p><button class="primary-button" id="start-quiz">Start practice test →</button></div></div></section>
+          <section class="surface quiz-side"><p class="eyebrow">YOUR PROGRESS</p><h3>Practice history</h3><div class="score-stat"><strong id="attempt-count">0</strong><span>practice rounds</span></div><div class="score-stat"><strong id="average-score">—</strong><span>average score</span></div><div class="list-divider"></div><p class="eyebrow">TOPICS TO REVIEW</p><div id="missed-topics"><p class="quiet-copy">Complete a quiz to see topics you may want to revisit.</p></div><button class="secondary-button full-width" data-goto="coach">Review with Study Coach</button></section>
+        </div>
+        <div id="quiz-empty" class="surface empty-library" hidden><span>📝</span><h3>Your practice quiz will appear here</h3><p>Upload your class material first. StudyMate will make multiple-choice questions from the text it can extract.</p><button class="primary-button" data-goto="upload">Upload study materials</button></div>
+      </section>
+
+      <!-- NOTES -->
+      <section class="view-page" id="view-notes" hidden>
+        <div class="section-intro"><div><p class="eyebrow">CLEAR NOTES, LESS REWRITING</p><h2>Your study notes</h2><p>Organized summaries created from the materials you upload.</p></div><span class="intro-illustration">📝</span></div>
+        <div class="notes-grid" id="notes-list"></div>
+        <div class="surface empty-library" id="notes-empty" hidden><span>📖</span><h3>Your notes will be created here</h3><p>Upload a supported document and StudyMate will organize the extracted text into a study summary.</p><button class="primary-button" data-goto="upload">Upload study materials</button></div>
+      </section>
+
+      <!-- STUDY COACH -->
+      <section class="view-page" id="view-coach" hidden>
+        <div class="coach-banner"><span class="coach-orb">✦</span><div><p class="eyebrow">YOUR SUPPORTIVE STUDY SIDEKICK</p><h2>Let's figure out what to focus on next.</h2><p>This coach uses your quiz scores, flashcard ratings, and upcoming planner tasks. It follows simple rules—there is no AI connection.</p></div></div>
+        <div class="coach-grid"><section class="surface coach-review"><div class="section-heading"><div><p class="eyebrow">YOUR LEARNING PATTERNS</p><h2>Study check-in</h2></div><span class="soft-icon">✧</span></div><div class="coach-metrics"><div><strong id="coach-materials">0</strong><span>study sources</span></div><div><strong id="coach-attempts">0</strong><span>practice rounds</span></div><div><strong id="coach-average">—</strong><span>average score</span></div></div><button class="primary-button" id="refresh-coach">Review my progress ↻</button><div id="coach-feedback" class="coach-feedback"></div></section><section class="surface coach-side"><p class="eyebrow">A FEW GENTLE REMINDERS</p><h3>Keep it kind</h3><div class="reminder"><span>⏱️</span><p><strong>Try a focus sprint</strong><small>25 minutes of focus, then a 5-minute break.</small></p></div><div class="reminder"><span>💧</span><p><strong>Take a real break</strong><small>Get some water and stretch between sessions.</small></p></div><div class="reminder"><span>🌱</span><p><strong>Progress, not perfection</strong><small>One question understood better is a win.</small></p></div></section></div>
+        <p class="privacy-note">Study Coach recommendations are simple rule-based suggestions from your activity. They are not AI-generated, a diagnosis, or a substitute for teacher guidance.</p>
+      </section>
+
+      <footer class="app-footer"><span>Made for your next big idea <b>♥</b></span><span>StudyMate · Your space to grow</span></footer>
+    </main>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
